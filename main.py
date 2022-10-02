@@ -258,13 +258,13 @@ def main():
     near_bombs_texts = []
 
     #=========SOUNDS============
-    press_sound = pg.mixer.Sound("press.wav")
+    press_sound = pg.mixer.Sound("sounds/press.wav")
     press_sound.set_volume(0.2)
-    flag_place_sound = pg.mixer.Sound("flag_place.wav")
+    flag_place_sound = pg.mixer.Sound("sounds/flag_place.wav")
     flag_place_sound.set_volume(0.2)
-    flag_destroy_sound = pg.mixer.Sound("flag_destroy.wav")
+    flag_destroy_sound = pg.mixer.Sound("sounds/flag_destroy.wav")
     flag_destroy_sound.set_volume(0.2)
-    explode_sound = pg.mixer.Sound("explode.wav")
+    explode_sound = pg.mixer.Sound("sounds/explode.wav")
     explode_sound.set_volume(0.2)
     #===========================
 
