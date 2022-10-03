@@ -16,13 +16,16 @@ offset = (0,panel_height)
 
 # COLORS 
 BLACK = (0,0,0)
-GREY = (215, 184, 153)
-LIGHT_GREY = (229, 194, 159)
+BROWN = (215, 184, 153)
+LIGHT_BROWN = (229, 194, 159)
 GREEN = (162, 209, 73)
 LIGHT_GREEN = (170, 215, 81)
 
 flag_img = pg.image.load("flag.png")
 flag_img = pg.transform.scale(flag_img, (cell_size, cell_size))
+
+clock_img = pg.image.load("clock.png")
+clock_img = pg.transform.scale(clock_img, (panel_height/1.5, panel_height/1.5))
 
 
 screen = pg.display.set_mode((width,height))
@@ -98,13 +101,13 @@ class Grid(Game_Object):
                 block = pg.Rect(x*self.cell_size+offset[0],y*self.cell_size+offset[1],cell_size,cell_size)
                 color_alter+=1
                 full_color = GREEN
-                empty_color = GREY
+                empty_color = BROWN
                 if color_alter == 1:
                     full_color = GREEN
-                    empty_color = GREY
+                    empty_color = LIGHT_BROWN
                 else:
                     full_color = LIGHT_GREEN
-                    empty_color = LIGHT_GREY
+                    empty_color = BROWN
                 if self.grid[x][y] == 1:
                     pg.draw.rect(screen,full_color,block)
                 elif self.grid[x][y] == 2:
@@ -280,12 +283,30 @@ class Flags(Game_Object):
         self.Rect = pg.Rect(position[0],position[1],cell_size,cell_size)
         Game_Object.Objects.append(self)
 
+complete_time = 0
+first_press = True
+near_bombs_texts = []
+grid = Grid()
 
+def Restart_Game():
+    global complete_time
+    global first_press
+    global near_bombs_texts
+    grid.generate_grid((grid_size,grid_size),cell_size)
+    first_press = True
+    near_bombs_texts = []
+    Game_Object.remove_all()
+    complete_time = 0
 
 def main():
     Clock = pg.time.Clock()
-    first_press = True
-    near_bombs_texts = []
+    global complete_time
+    global first_press
+    global near_bombs_texts
+    
+    clock_time = ce.Center_Text((width/2,panel_height/2),str(complete_time),(0,0,0),50)
+    clock_rect = pg.Rect(0,0,cell_size,cell_size)
+    clock_rect.center = (clock_time.rect.x-clock_img.get_width()/2,clock_time.rect.y)
 
     #=========SOUNDS============
     press_sound = pg.mixer.Sound("sounds/press.wav")
@@ -299,8 +320,9 @@ def main():
     #===========================
 
     panel = ce.Panel((0,0),(width,panel_height),(74, 117, 44))
+    panel.z_sort = -1
 
-    grid = Grid()
+    
     grid.generate_grid((grid_size,grid_size),cell_size)
 
     is_running = True
@@ -312,11 +334,8 @@ def main():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_r:
                     # RESTART GAME
-                    grid.generate_grid((grid_size,grid_size),cell_size)
-                    first_press = True
-                    near_bombs_texts = []
                     Win_text.visible = False
-                    Game_Object.remove_all()
+                    Restart_Game()
             
             if event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = pg.mouse.get_pos()
@@ -346,11 +365,8 @@ def main():
                         if grid.grid[grid_pos[0]][grid_pos[1]] == 2:
                             # RESTART GAME AFTER PRESSING A BOMB
                             explode_sound.play()
-                            grid.generate_grid((grid_size,grid_size),cell_size)
-                            first_press = True
-                            near_bombs_texts = []
                             Win_text.visible = False
-                            Game_Object.remove_all()
+                            Restart_Game()
                             continue
 
                         grid.grid[grid_pos[0]][grid_pos[1]] = 0
@@ -370,7 +386,7 @@ def main():
                             grid.destroy_near_empty(grid_pos)
         
         screen.fill((0,0,0))
-        Clock.tick(60)
+        delta = Clock.tick(60)/1000
         ce.UI.Update()
 
         near_bombs_texts = []
@@ -398,8 +414,20 @@ def main():
         Win_text = ce.Center_Text((width/2+offset[0],height/2+offset[1]),"YOU WON",(22, 130, 87),100,visible=False)
         if grid.win_check():
             Win_text.visible = True
+        else:
+            complete_time+=delta
+            if complete_time > 999:
+                complete_time = 999
+        
+        time_formated = floor(complete_time)
+        if time_formated/100 >= 1: time_formated = str(time_formated)
+        elif time_formated/10 >= 1: time_formated = "0"+str(time_formated)
+        else: time_formated = "00"+str(time_formated)
+        clock_time.text = str(time_formated)
+        clock_time.rect.center = (width/2+clock_time.rect.width/2,panel_height/2)
 
         ce.UI.Draw(screen)
+        screen.blit(clock_img,clock_rect)
         Win_text.Remove()
         for x in near_bombs_texts:
             x.Remove()
