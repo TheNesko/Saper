@@ -86,6 +86,32 @@ class Grid(Game_Object):
         self.grid = []
         self.cell_neighbours = []
     
+    def draw_grid(self):
+        color_alter = 0
+        for x in range(grid_size):
+            color_alter+=1
+            if color_alter > 1:
+                color_alter = 0
+            for y in range(grid_size):
+                block = pg.Rect(x*self.cell_size,y*self.cell_size,cell_size,cell_size)
+                color_alter+=1
+                full_color = GREEN
+                empty_color = GREY
+                if color_alter == 1:
+                    full_color = GREEN
+                    empty_color = GREY
+                else:
+                    full_color = LIGHT_GREEN
+                    empty_color = LIGHT_GREY
+                if self.grid[x][y] == 1:
+                    pg.draw.rect(screen,full_color,block)
+                elif self.grid[x][y] == 2:
+                    pg.draw.rect(screen,full_color,block)
+                elif self.grid[x][y] == 0:
+                    pg.draw.rect(screen,empty_color,block)
+                if color_alter > 1:
+                    color_alter = 0
+
     def generate_grid(self,map_size,block_size):
         self.grid = []
         self.cell_neighbours = []
@@ -252,6 +278,7 @@ class Flags(Game_Object):
         Game_Object.Objects.append(self)
 
 
+
 def main():
     Clock = pg.time.Clock()
     first_press = True
@@ -353,30 +380,7 @@ def main():
                     near_bombs_texts.append(text)
 
         # DRAW GRID BLOCKS
-        color_alter = 0
-        for x in range(grid_size):
-            color_alter+=1
-            if color_alter > 1:
-                color_alter = 0
-            for y in range(grid_size):
-                block = pg.Rect(x*grid.cell_size,y*grid.cell_size,cell_size,cell_size)
-                color_alter+=1
-                full_color = GREEN
-                empty_color = GREY
-                if color_alter == 1:
-                    full_color = GREEN
-                    empty_color = GREY
-                else:
-                    full_color = LIGHT_GREEN
-                    empty_color = LIGHT_GREY
-                if grid.grid[x][y] == 1:
-                    pg.draw.rect(screen,full_color,block)
-                elif grid.grid[x][y] == 2:
-                    pg.draw.rect(screen,full_color,block)
-                elif grid.grid[x][y] == 0:
-                    pg.draw.rect(screen,empty_color,block)
-                if color_alter > 1:
-                    color_alter = 0
+        grid.draw_grid()
 
         for x in Game_Object.Objects:
             x.Draw()
