@@ -14,10 +14,10 @@ height = width
 
 # COLORS 
 BLACK = (0,0,0)
-GREY = (70,70,70)
-LIGHT_GREY = (100,100,100)
-GREEN = (0,255,0)
-LIGHT_GREEN = (0,150,0)
+GREY = (120,120,120)
+LIGHT_GREY = (150,150,150)
+GREEN = (0,200,0)
+LIGHT_GREEN = (0,160,0)
 
 flag_img = pg.image.load("flag.png")
 flag_img = pg.transform.scale(flag_img, (cell_size, cell_size))
