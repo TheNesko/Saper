@@ -10,14 +10,16 @@ grid_size = 10
 width = 400
 cell_size = width/grid_size
 panel_height = 100
-height = width
+height = width+panel_height
+
+offset = (0,panel_height)
 
 # COLORS 
 BLACK = (0,0,0)
-GREY = (120,120,120)
-LIGHT_GREY = (150,150,150)
-GREEN = (0,200,0)
-LIGHT_GREEN = (0,160,0)
+GREY = (215, 184, 153)
+LIGHT_GREY = (229, 194, 159)
+GREEN = (162, 209, 73)
+LIGHT_GREEN = (170, 215, 81)
 
 flag_img = pg.image.load("flag.png")
 flag_img = pg.transform.scale(flag_img, (cell_size, cell_size))
@@ -93,7 +95,7 @@ class Grid(Game_Object):
             if color_alter > 1:
                 color_alter = 0
             for y in range(grid_size):
-                block = pg.Rect(x*self.cell_size,y*self.cell_size,cell_size,cell_size)
+                block = pg.Rect(x*self.cell_size+offset[0],y*self.cell_size+offset[1],cell_size,cell_size)
                 color_alter+=1
                 full_color = GREEN
                 empty_color = GREY
@@ -271,6 +273,8 @@ class Grid(Game_Object):
             return True
         return False
 
+# TODO ADD FLAGS BREAKING AFTER BLOCKS UNDER THEM HAVE BEEN DESTROYED
+
 class Flags(Game_Object):
     def __init__(self,position) -> None:
         self.Img = flag_img
@@ -315,8 +319,8 @@ def main():
                     Game_Object.remove_all()
             
             if event.type == pg.MOUSEBUTTONDOWN:
-                grid_pos = grid.world_to_grid(pg.mouse.get_pos())
                 mouse_pos = pg.mouse.get_pos()
+                grid_pos = grid.world_to_grid((mouse_pos[0]-offset[0],mouse_pos[1]-offset[1]))
                 if pg.mouse.get_pressed()[2]:
                     if grid.grid[grid_pos[0]][grid_pos[1]] == 0:
                         continue
@@ -328,7 +332,8 @@ def main():
                             x.remove()
                             break
                     if colide == False:
-                        flag = Flags(grid.grid_to_world(grid_pos))
+                        flag_pos = grid.grid_to_world(grid_pos)
+                        flag = Flags((flag_pos[0]+offset[0],flag_pos[1]+offset[1]))
                         flag_place_sound.play()
                         
                 if pg.mouse.get_pressed()[0]:
@@ -374,18 +379,23 @@ def main():
                 if grid.grid[x][y] == 2 or grid.grid[x][y] == 1: continue
                 near_bombs = grid.near_bombs((x,y))
                 if near_bombs > 0:
-                    text_color = (0,0,200)
+                    text_color = (0,0,0)
+                    if near_bombs == 1: text_color = (83, 142, 201)
+                    if near_bombs == 2: text_color = (56, 142, 60)
+                    if near_bombs == 3: text_color = (211, 47, 47)
+                    if near_bombs == 4: text_color = (123, 31, 162)
+                    if near_bombs == 5: text_color = (200,200,0)
+                    if near_bombs == 6: text_color = (0,200,200)
                     text_pos = grid.grid_to_world((x,y))
-                    text = ce.Center_Text((text_pos[0]+cell_size/2,text_pos[1]+cell_size/2),str(near_bombs),text_color,int(cell_size*1.5))
+                    text = ce.Center_Text((text_pos[0]+cell_size/2+offset[0],text_pos[1]+cell_size/2+offset[1]),str(near_bombs),text_color,int(cell_size*1.2))
                     near_bombs_texts.append(text)
 
-        # DRAW GRID BLOCKS
         grid.draw_grid()
 
         for x in Game_Object.Objects:
             x.Draw()
 
-        Win_text = ce.Center_Text((width/2,height/2),"YOU WON",(22, 130, 87),100,visible=False)
+        Win_text = ce.Center_Text((width/2+offset[0],height/2+offset[1]),"YOU WON",(22, 130, 87),100,visible=False)
         if grid.win_check():
             Win_text.visible = True
 
