@@ -9,7 +9,7 @@ from pygame.locals import *
 grid_size = 10
 width = 400
 cell_size = width/grid_size
-panel_height = 100
+panel_height = 50
 height = width+panel_height
 
 offset = (0,panel_height)
@@ -254,8 +254,7 @@ class Grid(Game_Object):
         #             self.destroy_near_empty(neighbour)
         #             for pos in self.get_neighbours_positions(neighbour):
         #                 self.grid[pos[0]][pos[1]] = 0
-
-
+        pass
 
     def world_to_grid(self,position):
         return (floor(position[0]/cell_size),floor(position[1]/cell_size))
@@ -299,8 +298,9 @@ def main():
     explode_sound.set_volume(0.2)
     #===========================
 
-    grid = Grid()
+    panel = ce.Panel((0,0),(width,panel_height),(74, 117, 44))
 
+    grid = Grid()
     grid.generate_grid((grid_size,grid_size),cell_size)
 
     is_running = True
@@ -333,7 +333,7 @@ def main():
                             break
                     if colide == False:
                         flag_pos = grid.grid_to_world(grid_pos)
-                        flag = Flags((flag_pos[0]+offset[0],flag_pos[1]+offset[1]))
+                        Flags((flag_pos[0]+offset[0],flag_pos[1]+offset[1]))
                         flag_place_sound.play()
                         
                 if pg.mouse.get_pressed()[0]:
