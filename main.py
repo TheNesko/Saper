@@ -5,11 +5,12 @@ from random import randint
 from pygame.locals import *
 
 
+
 grid_size = 10
-widith = 400
-cell_size = widith/grid_size
+width = 400
+cell_size = width/grid_size
 panel_height = 100
-height = widith
+height = width
 
 # COLORS 
 BLACK = (0,0,0)
@@ -22,7 +23,7 @@ flag_img = pg.image.load("flag.png")
 flag_img = pg.transform.scale(flag_img, (cell_size, cell_size))
 
 
-screen = pg.display.set_mode((widith,height))
+screen = pg.display.set_mode((width,height))
 pg.display.set_caption('Saper')
 
 class Game_Object():
@@ -206,7 +207,6 @@ class Grid(Game_Object):
                 bombs -= 1
 
     def destroy_near_empty(self,start_pos):
-        # TODO OPTIMISE
         temp_array = [start_pos]
         while len(temp_array) != 0:
             for pos in temp_array:
@@ -222,11 +222,11 @@ class Grid(Game_Object):
         # for neighbour in self.get_neighbours_positions((start_pos[0],start_pos[1])):
         #     if self.get_cell(neighbour) != 0:
         #         if self.near_bombs(neighbour) == 0:
-        #             temp_array.append(neighbour)
         #             self.grid[neighbour[0]][neighbour[1]] = 0
         #             self.destroy_near_empty(neighbour)
         #             for pos in self.get_neighbours_positions(neighbour):
         #                 self.grid[pos[0]][pos[1]] = 0
+
 
 
     def world_to_grid(self,position):
@@ -349,7 +349,7 @@ def main():
                 if near_bombs > 0:
                     text_color = (0,0,200)
                     text_pos = grid.grid_to_world((x,y))
-                    text = ce.Text((text_pos[0]+cell_size/3,text_pos[1]+5),str(near_bombs),text_color,50)
+                    text = ce.Center_Text((text_pos[0]+cell_size/2,text_pos[1]+cell_size/2),str(near_bombs),text_color,int(cell_size*1.5))
                     near_bombs_texts.append(text)
 
         # DRAW GRID BLOCKS
@@ -381,7 +381,7 @@ def main():
         for x in Game_Object.Objects:
             x.Draw()
 
-        Win_text = ce.Center_Text((widith/2,height/2),"YOU WON",(22, 130, 87),100,visible=False)
+        Win_text = ce.Center_Text((width/2,height/2),"YOU WON",(22, 130, 87),100,visible=False)
         if grid.win_check():
             Win_text.visible = True
 
